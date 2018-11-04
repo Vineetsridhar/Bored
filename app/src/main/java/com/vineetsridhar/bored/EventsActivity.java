@@ -120,9 +120,9 @@ public class EventsActivity extends AppCompatActivity {
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(title.getText().toString().equals("") || desc.getText().toString().equals("") || location.getText().toString().equals("")){
+                if (title.getText().toString().equals("") || desc.getText().toString().equals("") || location.getText().toString().equals("")) {
                     Toast.makeText(getBaseContext(), "Make sure to fill out all fields", Toast.LENGTH_SHORT).show();
-                } else{
+                } else {
                     addToDatabase();
                     viewMenu();
                 }
@@ -148,13 +148,13 @@ public class EventsActivity extends AppCompatActivity {
         adapter.setOnItemClickListener(new EventAdapter.ClickListener() {
             @Override
             public void onItemClick(int position, View v) {
-                     makeToast("df");
-                    Uri gmmIntentUri = Uri.parse("geo:0,0?q=" + eventList.get(position).getLocation());
-                    Intent i = new Intent(Intent.ACTION_VIEW);
-                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    i.setData(gmmIntentUri);
-                    i.setPackage("com.google.android.apps.maps");
-                    startActivity(i);
+                makeToast("df");
+                Uri gmmIntentUri = Uri.parse("geo:0,0?q=" + eventList.get(position).getLocation());
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                i.setData(gmmIntentUri);
+                i.setPackage("com.google.android.apps.maps");
+                startActivity(i);
             }
 
             @Override
@@ -165,10 +165,7 @@ public class EventsActivity extends AppCompatActivity {
 
     }
 
-    private void addToDatabase(){
-        if(checkEvents(auth.getUid()))
-            makeToast("You cannot have two events up at once. Please remove the existing Event");
-        else {
+    private void addToDatabase() {
             DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Events").push();
             ref.child("title").setValue(title.getText().toString());
             ref.child("description").setValue(desc.getText().toString());
@@ -186,199 +183,185 @@ public class EventsActivity extends AppCompatActivity {
                                 Toast.makeText(getBaseContext(), "Error Occured", Toast.LENGTH_SHORT).show();
                         }
                     });
+    }
+
+        @Override
+        public boolean onCreateOptionsMenu (Menu menu){
+            MenuInflater inflater = getMenuInflater();
+            inflater.inflate(R.menu.menu, menu);
+            return true;
         }
-    }
 
-    public boolean checkEvents(final String id){
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Events");
-        returnState = false;
-        ref.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for(DataSnapshot ds:dataSnapshot.getChildren()){
-                    makeToast("In Loop");
-                    if(id.equals(ds.child("id").getValue())){
-                        returnState = true;
+        @Override
+        public boolean onOptionsItemSelected (MenuItem item){
+        switch (item.getItemId()){
+            case R.id.logout:
+                auth.signOut();
+                startActivity(new Intent(EventsActivity.this, LoginActivity.class));
+                break;
+            case R.id.remove:
+                startActivity(new Intent(EventsActivity.this, RemoveActivity.class));
+        }
+
+            return true;
+        }
+
+        private void viewMenu () {
+            if (!isOpen) {
+                //Open the menu
+                //Get animation parameters
+                int x = layout.getRight();
+                int y = layout.getBottom();
+                int startRadius = 0;
+                int endRadius = (int) Math.hypot(layout.getWidth(), layout.getHeight());
+
+                //Create animation and change values of the Floating Action Button
+                button.setBackgroundTintList(ColorStateList.valueOf(ResourcesCompat.getColor(getResources(), android.R.color.white, null)));
+                button.setImageResource(R.drawable.ic_close_black_24dp);
+                Animator anim = ViewAnimationUtils.createCircularReveal(menuLayout, x, y, startRadius, endRadius);
+                menuLayout.setVisibility(View.VISIBLE);
+                anim.start();
+
+                view.setVisibility(View.GONE);
+                //Set isOpen as true so that I know if the menu is open or not.
+                isOpen = true;
+            } else {
+                //If menu is already open, and I need to get back to homescreen
+                //Animation Parameters
+                int x = layout.getRight();
+                int y = layout.getBottom();
+                int startRadius = (int) Math.hypot(layout.getWidth(), layout.getHeight());
+                int endRadius = 0;
+
+                //Create animation and change values of the Floating Action Button
+                button.setBackgroundTintList(ColorStateList.valueOf(ResourcesCompat.getColor(getResources(), R.color.colorAccent, null)));
+                button.setImageResource(R.drawable.ic_add_white_24dp);
+                view.setVisibility(View.VISIBLE);
+                Animator anim = ViewAnimationUtils.createCircularReveal(menuLayout, x, y, startRadius, endRadius);
+                anim.addListener(new Animator.AnimatorListener() {
+                    @Override
+                    public void onAnimationStart(Animator animator) {
+
                     }
-                }
+
+                    @Override
+                    public void onAnimationEnd(Animator animator) {
+                        //listView.setVisibility(View.VISIBLE);
+                        menuLayout.setVisibility(View.GONE);
+
+                    }
+
+                    @Override
+                    public void onAnimationCancel(Animator animator) {
+
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animator animator) {
+
+                    }
+                });
+                //Start animation, and change isOpen to false if user clicks button again
+                anim.start();
+                isOpen = false;
             }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-        return returnState;
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu,menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        auth.signOut();
-        startActivity(new Intent(EventsActivity.this, LoginActivity.class));
-        return true;
-    }
-
-    private void viewMenu() {
-        if (!isOpen) {
-            //Open the menu
-            //Get animation parameters
-            int x = layout.getRight();
-            int y = layout.getBottom();
-            int startRadius = 0;
-            int endRadius = (int) Math.hypot(layout.getWidth(), layout.getHeight());
-
-            //Create animation and change values of the Floating Action Button
-            button.setBackgroundTintList(ColorStateList.valueOf(ResourcesCompat.getColor(getResources(), android.R.color.white, null)));
-            button.setImageResource(R.drawable.ic_close_black_24dp);
-            Animator anim = ViewAnimationUtils.createCircularReveal(menuLayout, x, y, startRadius, endRadius);
-            menuLayout.setVisibility(View.VISIBLE);
-            anim.start();
-            view.setVisibility(View.GONE);
-            //Set isOpen as true so that I know if the menu is open or not.
-            isOpen = true;
-        } else {
-            //If menu is already open, and I need to get back to homescreen
-            //Animation Parameters
-            int x = layout.getRight();
-            int y = layout.getBottom();
-            int startRadius = (int) Math.hypot(layout.getWidth(), layout.getHeight());
-            int endRadius = 0;
-
-            //Create animation and change values of the Floating Action Button
-            button.setBackgroundTintList(ColorStateList.valueOf(ResourcesCompat.getColor(getResources(), R.color.colorAccent, null)));
-            button.setImageResource(R.drawable.ic_add_white_24dp);
-            Animator anim = ViewAnimationUtils.createCircularReveal(menuLayout, x, y, startRadius, endRadius);
-            anim.addListener(new Animator.AnimatorListener() {
+        }
+        public void loadItems () {
+            DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
+            ref.child("Events").addValueEventListener(new ValueEventListener() {
                 @Override
-                public void onAnimationStart(Animator animator) {
-
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    eventList.clear();
+                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                        eventList.add(new Event((String) ds.child("name").getValue(), (String) ds.child("title").getValue(), (String) ds.child("location").getValue(), (String) ds.child("description").getValue(), (String) ds.child("phone").getValue()));
+                    }
+                    adapter.notifyDataSetChanged();
                 }
 
                 @Override
-                public void onAnimationEnd(Animator animator) {
-                    //listView.setVisibility(View.VISIBLE);
-                    view.setVisibility(View.VISIBLE);
-                    menuLayout.setVisibility(View.GONE);
-
-                }
-
-                @Override
-                public void onAnimationCancel(Animator animator) {
-
-                }
-
-                @Override
-                public void onAnimationRepeat(Animator animator) {
+                public void onCancelled(@NonNull DatabaseError databaseError) {
 
                 }
             });
-            //Start animation, and change isOpen to false if user clicks button again
-            anim.start();
-            isOpen = false;
         }
-    }
-    public void loadItems(){
-       DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
-       ref.child("Events").addValueEventListener(new ValueEventListener() {
-           @Override
-           public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-               eventList.clear();
-               for(DataSnapshot ds:dataSnapshot.getChildren()) {
-                   eventList.add(new Event((String)ds.child("name").getValue(),(String) ds.child("title").getValue(), (String)ds.child("location").getValue(), (String)ds.child("description").getValue(),(String) ds.child("phone").getValue()));
-               }
-               adapter.notifyDataSetChanged();
-           }
 
-           @Override
-           public void onCancelled(@NonNull DatabaseError databaseError) {
-
-           }
-       });
-    }
-
-    public void getLocation(){
-        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED){
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-        } else{
-            Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-            if(location != null){
-                double latti = location.getLatitude();
-                double longi = location.getLongitude();
-                getAddress(latti, longi);
-            }
-            else{
-                this.location.setHint("Was not able to find Location");
-            }
-        }
-    }
-
-    public void getNameandNumber(){
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("users");
-        ref.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for(DataSnapshot ds: snapshot.getChildren()){
-                    if(ds.toString().contains(auth.getUid())) {
-                        name = (String) ds.child("name").getValue();
-                        number = (String) ds.child("phone").getValue();
-                    }
+        public void getLocation () {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+            } else {
+                Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                if (location != null) {
+                    double latti = location.getLatitude();
+                    double longi = location.getLongitude();
+                    getAddress(latti, longi);
+                } else {
+                    this.location.setHint("Was not able to find Location");
                 }
             }
+        }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+        public void getNameandNumber () {
+            DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("users");
+            ref.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    for (DataSnapshot ds : snapshot.getChildren()) {
+                        if (ds.toString().contains(auth.getUid())) {
+                            name = (String) ds.child("name").getValue();
+                            number = (String) ds.child("phone").getValue();
+                        }
+                    }
+                }
 
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+        }
+
+        public void getAddress ( double latitude, double longitude){
+
+            Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
+            try {
+                StringBuilder address = new StringBuilder();
+                List<Address> addressList = geocoder.getFromLocation(latitude, longitude, 1);
+                if (addressList != null && addressList.size() > 0) {
+                    if (addressList.get(0).getSubThoroughfare() != null)
+                        address.append(addressList.get(0).getSubThoroughfare() + " ");
+                    if (addressList.get(0).getThoroughfare() != null)
+                        address.append(addressList.get(0).getThoroughfare() + ", ");
+
+                    if (addressList.get(0).getLocality() != null)
+                        address.append(addressList.get(0).getLocality() + ", ");
+                    if (addressList.get(0).getAdminArea() != null)
+                        address.append(addressList.get(0).getAdminArea() + " ");
+                    if (addressList.get(0).getPostalCode() != null)
+                        address.append(addressList.get(0).getPostalCode());
+
+                    this.location.setText(address.toString());
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        });
-    }
+        }
 
-    public void getAddress(double latitude, double longitude){
+        @Override
+        public void onRequestPermissionsResult ( int requestCode, @NonNull String[] permissions,
+        @NonNull int[] grantResults){
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
-        try {
-            StringBuilder address = new StringBuilder();
-            List<Address> addressList = geocoder.getFromLocation(latitude, longitude, 1);
-            if(addressList != null && addressList.size() > 0){
-                if(addressList.get(0).getSubThoroughfare() != null)
-                    address.append(addressList.get(0).getSubThoroughfare() + " ");
-                if(addressList.get(0).getThoroughfare() != null)
-                    address.append(addressList.get(0).getThoroughfare() + ", ");
-
-                if(addressList.get(0).getLocality() != null)
-                    address.append(addressList.get(0).getLocality() + ", ");
-                if(addressList.get(0).getAdminArea() != null)
-                    address.append(addressList.get(0).getAdminArea() + " ");
-                if(addressList.get(0).getPostalCode() != null)
-                    address.append(addressList.get(0).getPostalCode());
-
-                this.location.setText(address.toString());
+            switch (requestCode) {
+                case 1:
+                    getLocation();
+                    break;
             }
-
-        } catch (IOException e) {
-            e.printStackTrace();
+        }
+        public void makeToast (String s){
+            Toast.makeText(getBaseContext(), s, Toast.LENGTH_LONG).show();
         }
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        switch(requestCode){
-            case 1:
-                getLocation();
-                break;
-        }
-    }
-    public void makeToast(String s){
-        Toast.makeText(getBaseContext(), s, Toast.LENGTH_LONG).show();
-    }
-}
