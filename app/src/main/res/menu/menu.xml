@@ -3,6 +3,8 @@
 
     <item android:id="@+id/logout"
         android:title="Log Out"/>
+    <!--
     <item android:title="Remove event"
         android:id="@+id/remove"/>
+        -->
 </menu>

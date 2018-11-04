@@ -32,14 +32,24 @@ public class RemoveActivity extends AppCompatActivity {
 
         view = findViewById(R.id.listView);
         events = new ArrayList<>();
-        
-        getEvents();
+        getEvents(new MyCallBack() {
+            @Override
+            public void onCallBack(String value) {
+                view.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> adapterView, View view, final int i, long l) {
+                        final String id = events.get(i).getId();
+                        FirebaseDatabase.getInstance().getReference().child("Events").child(id).removeValue();
+                        events.remove(i);
+                    }
+                });
+            }
+        });
 
     }
 
-    public void getEvents(){
+    public void getEvents(final MyCallBack myCallBack){
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Events");
-
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -48,37 +58,8 @@ public class RemoveActivity extends AppCompatActivity {
                 }
                 adapter = new ArrayAdapter<>(getBaseContext(), android.R.layout.simple_list_item_1, events);
                 view.setAdapter(adapter);
-
-                view.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> adapterView, View view, final int i, long l) {
-
-                        final String id = events.get(i).getId();
-
-
-                        AlertDialog.Builder builder;
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                            builder = new AlertDialog.Builder(getBaseContext(), android.R.style.Theme_Material_Dialog_Alert);
-                        } else {
-                            builder = new AlertDialog.Builder(getBaseContext());
-                        }
-                        builder.setTitle("Delete entry")
-                                .setMessage("Are you sure you want to delete this entry?")
-                                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        FirebaseDatabase.getInstance().getReference().child("Events").child(id).removeValue();
-                                        events.remove(i);
-                                    }
-                                })
-                                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        // do nothing
-                                    }
-                                })
-                                .setIcon(android.R.drawable.ic_dialog_alert)
-                                .show();
-                    }
-                });
+                adapter.notifyDataSetChanged();
+                myCallBack.onCallBack("");
             }
 
             @Override
@@ -86,5 +67,8 @@ public class RemoveActivity extends AppCompatActivity {
 
             }
         });
+    }
+    public interface MyCallBack{
+        void onCallBack(String value);
     }
 }

@@ -148,7 +148,6 @@ public class EventsActivity extends AppCompatActivity {
         adapter.setOnItemClickListener(new EventAdapter.ClickListener() {
             @Override
             public void onItemClick(int position, View v) {
-                makeToast("df");
                 Uri gmmIntentUri = Uri.parse("geo:0,0?q=" + eventList.get(position).getLocation());
                 Intent i = new Intent(Intent.ACTION_VIEW);
                 i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -159,7 +158,8 @@ public class EventsActivity extends AppCompatActivity {
 
             @Override
             public void onItemLongClick(int position, View v) {
-
+                Intent i = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + eventList.get(position).getNumber()));
+                startActivity(i);
             }
         });
 
@@ -171,7 +171,7 @@ public class EventsActivity extends AppCompatActivity {
             ref.child("description").setValue(desc.getText().toString());
             ref.child("name").setValue(name);
             ref.child("phone").setValue(number);
-            ref.child("timestamp").setValue(ServerValue.TIMESTAMP);
+            ref.child("timestamp").setValue(-System.currentTimeMillis());
             ref.child("id").setValue(auth.getUid());
             ref.child("location").setValue(location.getText().toString())
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -199,8 +199,8 @@ public class EventsActivity extends AppCompatActivity {
                 auth.signOut();
                 startActivity(new Intent(EventsActivity.this, LoginActivity.class));
                 break;
-            case R.id.remove:
-                startActivity(new Intent(EventsActivity.this, RemoveActivity.class));
+            //case R.id.remove:
+                //startActivity(new Intent(EventsActivity.this, RemoveActivity.class));
         }
 
             return true;
@@ -268,7 +268,8 @@ public class EventsActivity extends AppCompatActivity {
         }
         public void loadItems () {
             DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
-            ref.child("Events").addValueEventListener(new ValueEventListener() {
+            Query query = ref.child("Events").orderByChild("timestamp");
+            query.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     eventList.clear();
