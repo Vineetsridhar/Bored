@@ -12,6 +12,7 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -26,6 +27,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.widget.Button;
@@ -46,6 +48,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 import com.karan.churi.PermissionManager.PermissionManager;
 
@@ -56,7 +59,7 @@ import java.util.Locale;
 import java.util.Map;
 
 public class EventsActivity extends AppCompatActivity {
-    boolean isOpen = false;
+    boolean isOpen = false, returnState;
     RelativeLayout layout;
     FloatingActionButton button;
     LinearLayout menuLayout;
@@ -67,6 +70,7 @@ public class EventsActivity extends AppCompatActivity {
     EventAdapter adapter;
     FirebaseAuth auth;
     String name, number;
+    String locationString;
 
     LocationManager locationManager;
 
@@ -125,25 +129,86 @@ public class EventsActivity extends AppCompatActivity {
             }
         });
 
+        view.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
+            @Override
+            public boolean onInterceptTouchEvent(@NonNull RecyclerView recyclerView, @NonNull MotionEvent motionEvent) {
+                return false;
+            }
+
+            @Override
+            public void onTouchEvent(@NonNull RecyclerView recyclerView, @NonNull MotionEvent motionEvent) {
+
+            }
+
+            @Override
+            public void onRequestDisallowInterceptTouchEvent(boolean b) {
+
+            }
+        });
+        adapter.setOnItemClickListener(new EventAdapter.ClickListener() {
+            @Override
+            public void onItemClick(int position, View v) {
+                     makeToast("df");
+                    Uri gmmIntentUri = Uri.parse("geo:0,0?q=" + eventList.get(position).getLocation());
+                    Intent i = new Intent(Intent.ACTION_VIEW);
+                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    i.setData(gmmIntentUri);
+                    i.setPackage("com.google.android.apps.maps");
+                    startActivity(i);
+            }
+
+            @Override
+            public void onItemLongClick(int position, View v) {
+
+            }
+        });
 
     }
 
     private void addToDatabase(){
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Events").push();
-        ref.child("title").setValue(title.getText().toString());
-        ref.child("description").setValue(desc.getText().toString());
-        ref.child("name").setValue(name);
-        ref.child("phone").setValue(number);
-        ref.child("location").setValue(location.getText().toString())
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if(task.isSuccessful())
-                            Log.e("", "");
-                        else
-                            Toast.makeText(getBaseContext(), "Error Occured", Toast.LENGTH_SHORT).show();
+        if(checkEvents(auth.getUid()))
+            makeToast("You cannot have two events up at once. Please remove the existing Event");
+        else {
+            DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Events").push();
+            ref.child("title").setValue(title.getText().toString());
+            ref.child("description").setValue(desc.getText().toString());
+            ref.child("name").setValue(name);
+            ref.child("phone").setValue(number);
+            ref.child("timestamp").setValue(ServerValue.TIMESTAMP);
+            ref.child("id").setValue(auth.getUid());
+            ref.child("location").setValue(location.getText().toString())
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful())
+                                Log.e("", "");
+                            else
+                                Toast.makeText(getBaseContext(), "Error Occured", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        }
+    }
+
+    public boolean checkEvents(final String id){
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Events");
+        returnState = false;
+        ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for(DataSnapshot ds:dataSnapshot.getChildren()){
+                    makeToast("In Loop");
+                    if(id.equals(ds.child("id").getValue())){
+                        returnState = true;
                     }
-                });
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+        return returnState;
     }
 
     @Override
@@ -175,6 +240,7 @@ public class EventsActivity extends AppCompatActivity {
             Animator anim = ViewAnimationUtils.createCircularReveal(menuLayout, x, y, startRadius, endRadius);
             menuLayout.setVisibility(View.VISIBLE);
             anim.start();
+            view.setVisibility(View.GONE);
             //Set isOpen as true so that I know if the menu is open or not.
             isOpen = true;
         } else {
@@ -198,7 +264,9 @@ public class EventsActivity extends AppCompatActivity {
                 @Override
                 public void onAnimationEnd(Animator animator) {
                     //listView.setVisibility(View.VISIBLE);
+                    view.setVisibility(View.VISIBLE);
                     menuLayout.setVisibility(View.GONE);
+
                 }
 
                 @Override
