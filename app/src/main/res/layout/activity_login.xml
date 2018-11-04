@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:background="@color/babyBlue"
+    tools:context=".LoginActivity">
+
+    <ImageView
+        style="@style/logins"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="30dp"
+        android:layout_margin="100dp"
+        android:src="@drawable/boar_cam_blue" />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.25"/>
+
+    <LinearLayout
+        style="@style/logins"
+        android:layout_width="match_parent"
+        android:layout_weight="1"
+        android:layout_height="0dp"
+        android:orientation="vertical">
+        <TextView
+            style="@style/logins"
+            android:id="@+id/login"
+            android:layout_width="match_parent"
+            android:layout_weight="1"
+            android:layout_height="0dp"
+            android:text="Log in"
+            android:fontFamily="@font/roboto_light"
+            android:background="@drawable/light_border"/>
+        <TextView
+            style="@style/logins"
+            android:id="@+id/signup"
+            android:layout_width="match_parent"
+            android:layout_weight="1"
+            android:layout_height="0dp"
+            android:text="Sign Up"
+            android:background="@drawable/dark_border"
+            android:fontFamily="@font/roboto_light_italic"/>
+    </LinearLayout>
+
+</LinearLayout>

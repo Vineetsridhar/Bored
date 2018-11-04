@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:background="@color/celadonGreen"
+    tools:context=".SignupActivity"
+    >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <TextView
+            style="@style/greetings"
+            android:id="@+id/hello_user"
+            android:text="@string/hello"
+            android:paddingTop="40dp"
+            />
+
+        <TextView
+            style="@style/userinfoprompt"
+            android:id="@+id/new_email"
+            android:text="@string/username"
+            android:paddingTop="50dp"
+            />
+
+        <EditText
+            android:id="@+id/email"
+            android:layout_marginHorizontal="50dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="textEmailAddress" />
+        <TextView
+            style="@style/userinfoprompt"
+            android:id="@+id/new_password"
+            android:text="@string/password"
+            android:paddingTop="25dp"
+            />
+
+        <EditText
+            android:layout_marginHorizontal="50dp"
+            android:id="@+id/password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="textPassword" />
+        <TextView
+            style="@style/userinfoprompt"
+            android:text="Name"
+            android:paddingTop="25dp"
+            />
+        <EditText
+            android:layout_marginHorizontal="50dp"
+            android:id="@+id/name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="text" />
+
+        <TextView
+            style="@style/userinfoprompt"
+            android:id="@+id/zip_code"
+            android:text="Zip Code"
+            android:paddingTop="25dp"
+            />
+
+        <EditText
+            android:layout_marginHorizontal="50dp"
+            android:id="@+id/location"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="text" />
+        <TextView
+            style="@style/userinfoprompt"
+            android:id="@+id/phone_number"
+            android:text="Phone Number"
+            android:paddingTop="25dp"
+            />
+
+        <EditText
+            android:layout_marginHorizontal="50dp"
+            android:id="@+id/phonenum"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="text" />
+
+        <TextView
+            style="@style/userinfoprompt"
+            android:id="@+id/signup"
+            android:text="Sign Up!"
+            android:paddingTop="25dp"
+            />
+
+    </LinearLayout>
+</ScrollView>

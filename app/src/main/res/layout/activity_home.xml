@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    tools:context=".HomeActivity"
+    android:background="@color/colombiaBlue">
+    <TextView
+        style="@style/greetings"
+        android:id="@+id/welcome_back"
+        android:text="@string/welcome"
+        android:paddingTop="150dp"
+        />
+
+    <TextView
+        style="@style/userinfoprompt"
+        android:text="@string/username"
+        android:paddingTop="50dp"
+        />
+
+    <EditText
+        android:id="@+id/username"
+        android:layout_marginHorizontal="50dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textEmailAddress" />
+    <TextView
+        style="@style/userinfoprompt"
+        android:hint="@string/password"
+        android:paddingTop="50dp"
+        />
+
+    <EditText
+        android:layout_marginHorizontal="50dp"
+        android:id="@+id/password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPassword" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Login"
+        android:layout_gravity="center"
+        style="@style/userinfoprompt"
+        android:paddingTop="50dp"
+        android:id="@+id/login"/>
+
+</LinearLayout>

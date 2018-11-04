@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/layout"
+    tools:context=".EventsActivity">
+
+    <android.support.v7.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/listView"/>
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:orientation="vertical"
+        tools:context=".MainActivity"
+        android:visibility="invisible"
+        android:id="@+id/createCard"
+        android:background="@color/colombiaBlue">
+        <TextView
+            style="@style/greetings"
+            android:text="Create an Event!"
+            android:paddingTop="40dp"
+            />
+
+        <TextView
+            style="@style/userinfoprompt"
+            android:text="Event Name"
+            android:paddingTop="50dp" />
+
+        <EditText
+            android:id="@+id/title"
+            android:layout_marginHorizontal="50dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="text" />
+
+        <TextView
+            style="@style/userinfoprompt"
+            android:text="Event Description"
+            android:paddingTop="50dp"
+            />
+
+        <EditText
+            android:id="@+id/description"
+            android:layout_marginHorizontal="50dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="text" />
+
+        <TextView
+            style="@style/userinfoprompt"
+            android:text="Address"
+            android:paddingTop="50dp"
+            />
+
+        <EditText
+            android:id="@+id/location"
+            android:layout_marginHorizontal="50dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="text" />
+
+        <TextView
+            style="@style/userinfoprompt"
+            android:textColor="@color/celadonGreen"
+            android:text="Get My Address"
+            android:paddingTop="50dp"
+            android:id="@+id/address"
+            />
+
+        <TextView
+            style="@style/userinfoprompt"
+            android:textColor="@color/celadonGreen"
+            android:text="Submit"
+            android:paddingTop="50dp"
+            android:id="@+id/submit"
+            />
+
+    </LinearLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_margin="16dp" />
+
+</RelativeLayout>

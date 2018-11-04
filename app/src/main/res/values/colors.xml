@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#008577</color>
+    <color name="colorPrimaryDark">#00574B</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="babyBlue">#88ccf1</color>
+    <color name="steelBlue">#3587a4</color>
+    <color name="celadonGreen">#2d848a</color>
+    <color name="colombiaBlue">#c1dff0</color>
+    <color name="apricot">#fac9b8</color>
+    <color name="background">#fac9b8</color>
+</resources>

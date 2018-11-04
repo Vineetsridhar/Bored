@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Bored</string>
+    <string name="main_boar">Picture of a Boar</string>
+    <string name="slogan">Bored? Make some memories!</string>
+    <string name="log_in">Log-In</string>
+    <string name="sign_up">Sign-Up</string>
+    <string name="welcome">Welcome Back!</string>
+    <string name="username">Enter Email</string>
+    <string name="password">Enter Password</string>
+    <string name="hello">Make an Account</string>
+    <string name="confirm_pass">Confirm Password</string>
+</resources>
