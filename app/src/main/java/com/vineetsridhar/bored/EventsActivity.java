@@ -3,7 +3,9 @@ package com.vineetsridhar.bored;
 import android.Manifest;
 import android.animation.Animator;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
@@ -13,6 +15,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
+import android.os.Vibrator;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -54,23 +57,23 @@ import com.karan.churi.PermissionManager.PermissionManager;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
 public class EventsActivity extends AppCompatActivity {
-    boolean isOpen = false, returnState;
+    boolean isOpen = false;
     RelativeLayout layout;
     FloatingActionButton button;
     LinearLayout menuLayout;
     TextView submit, address;
     EditText title, location, desc;
     RecyclerView view;
-    ArrayList<Event> eventList = new ArrayList<>();
+    ArrayList<Event> eventList = new ArrayList<>(), myEventList = new ArrayList<>();
     EventAdapter adapter;
     FirebaseAuth auth;
-    String name, number;
-    String locationString;
+    String name, number, userID;
 
     LocationManager locationManager;
 
@@ -93,6 +96,7 @@ public class EventsActivity extends AppCompatActivity {
         desc = findViewById(R.id.description);
         auth = FirebaseAuth.getInstance();
 
+        userID = auth.getUid();
         getNameandNumber();
 
 
@@ -158,10 +162,54 @@ public class EventsActivity extends AppCompatActivity {
 
             @Override
             public void onItemLongClick(int position, View v) {
-                Intent i = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + eventList.get(position).getNumber()));
-                startActivity(i);
+                Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                vibrator.vibrate(50);
+                if(eventList.get(position).getId().equals(userID))
+                    //showPopup(position);
+                    showPopup(position);
+                else {
+                    Intent i = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + eventList.get(position).getNumber()));
+                    startActivity(i);
+                }
             }
         });
+
+    }
+    public void deleteEvent(int pos){
+        FirebaseDatabase.getInstance().getReference().child("Events").child(eventList.get(pos).getKey()).removeValue();
+        eventList.remove(pos);
+        adapter.notifyDataSetChanged();
+    }
+
+    public void showPopup(final int pos){
+        AlertDialog.Builder builder = new AlertDialog.Builder(EventsActivity.this);
+
+        // Set a title for alert dialog
+        builder.setTitle("Are you sure?");
+
+        // Ask the final question
+        builder.setMessage("Are you sure you want to delete your event?");
+
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                deleteEvent(pos);
+            }
+        });
+
+        // Set the alert dialog no button click listener
+        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // Do something when No button clicked
+                Toast.makeText(getApplicationContext(),
+                        "No Button Clicked",Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        // Display the alert dialog on interface
+        dialog.show();
 
     }
 
@@ -274,7 +322,8 @@ public class EventsActivity extends AppCompatActivity {
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     eventList.clear();
                     for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                        eventList.add(new Event((String) ds.child("name").getValue(), (String) ds.child("title").getValue(), (String) ds.child("location").getValue(), (String) ds.child("description").getValue(), (String) ds.child("phone").getValue()));
+                        FirebaseAdapter info = ds.getValue(FirebaseAdapter.class);
+                        eventList.add(new Event(info.getName(), info.getTitle(), info.getLocation(), info.getDescription(), info.getPhone(), info.getId(), ds.getKey()));
                     }
                     adapter.notifyDataSetChanged();
                 }
